@@ -1,0 +1,34 @@
+#!/bin/bash
+
+name=$1
+echo "Buscar ==> $name"
+
+EXTRACTED_URL=`
+        curl -s https://poseidonhd.net/?s=$name |
+        grep $name |
+        sed -n 's:.*<a href="\(.*\)">.*</a>.:\1:p'
+        `
+array=(${EXTRACTED_URL// / })
+
+echo ${array[0]}
+#-----------------------------------------------------
+EXTRACTED_URL=`
+        curl -s ${array[0]} |
+        grep 'metaframe rptss' |
+        sed -n 's:.*<iframe class="metaframe rptss" src="//\(.*\).*" frameborder="0" scrolling="no" allowfullscreen></iframe>*.:\1:p' |
+        sed 's#\%3F#?#g' |
+        sed 's#\%26#\&#g'
+        `
+array=(${EXTRACTED_URL// / })
+echo ${array[0]}
+#-----------------------------------------------------
+EXTRACTED_URL=`
+        curl -s https://${array[0]} |
+        grep 'playerid="//' |
+        sed -n 's:.*data-playerid="//\(.*\).*">*.:\1:p'
+        `
+array=(${EXTRACTED_URL// / })
+
+echo ${array[1]}
+
+#exit
